@@ -119,6 +119,13 @@ namespace ReTracer.Rendering
                 );
         }
 
+        public static Matrix4x4 CreateRotation( float Pitch, float Yaw, float Roll, bool Radians = true )
+        {
+            return CreateRotationX( Pitch, Radians ) *
+                   CreateRotationY( Yaw, Radians ) *
+                   CreateRotationZ( Roll, Radians );
+        }
+
         public static Matrix4x4 CreateOrtho(float Width, float Height, float Znear, float Zfar)
         {
             return new Matrix4x4(
@@ -149,7 +156,7 @@ namespace ReTracer.Rendering
                 {
                     Temp[ i, j ] = 0;
                     for ( int k = 0; k < 2; k++ )
-                        Temp[ i, j ] += B[ i, k ] * A[ k, j ];
+                        Temp[ i, j ] += A[ i, k ] * B[ k, j ];
                 }
             }
 

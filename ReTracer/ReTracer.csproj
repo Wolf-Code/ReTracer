@@ -48,6 +48,7 @@
     <Compile Include="EventArgs\RenderProgressEventArgs.cs" />
     <Compile Include="MathHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\Angle.cs" />
     <Compile Include="Rendering\Matrix4x4.cs" />
     <Compile Include="Rendering\Objects\Intersection.cs" />
     <Compile Include="Rendering\Objects\Sphere.cs" />
