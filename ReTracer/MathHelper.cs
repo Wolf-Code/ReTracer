@@ -4,26 +4,19 @@ namespace ReTracer
 {
     public static class MathHelper
     {
-        public static float PI { private set; get; }
-
-        static MathHelper( )
+        private static float GetRadians( float Angle, bool InRadians = true )
         {
-            PI = ( float ) Math.PI;
-        }
-
-        private static float GetRadians( float Angle, bool Radians = true )
-        {
-            return Radians ? Angle : DegreesToRadians( Angle );
+            return InRadians ? Angle : DegreesToRadians( Angle );
         }
 
         public static float RadiansToDegrees( float Radians )
         {
-            return Radians * ( 180f / PI );
+            return ( float )( Radians * ( 180.0 / Math.PI ) );
         }
 
         public static float DegreesToRadians( float Degrees )
         {
-            return Degrees * ( PI / 180f );
+            return ( float )( Degrees * ( Math.PI / 180.0 ) );
         }
 
         public static float Cos( float Angle, bool Radians = true )
@@ -33,7 +26,7 @@ namespace ReTracer
 
         public static float Sin( float Angle, bool Radians = true )
         {
-            return ( float ) Math.Cos( GetRadians( Angle, Radians ) );
+            return ( float ) Math.Sin( GetRadians( Angle, Radians ) );
         }
 
         public static float ATan( float Angle, bool Radians = true )

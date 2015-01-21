@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text;
 
 namespace ReTracer.Rendering
 {
@@ -12,6 +13,21 @@ namespace ReTracer.Rendering
         public float this[ int x, int y ]
         {
             get { return this.Data[ x, y ]; }
+        }
+
+        public Vector3 Right
+        {
+            get { return new Vector3( this[ 0, 0 ], this[ 0, 1 ], this[ 0, 2 ] ); }
+        }
+
+        public Vector3 Up
+        {
+            get { return new Vector3( this[ 1, 0 ], this[ 1, 1 ], this[ 1, 2 ] ); }
+        }
+
+        public Vector3 Forward
+        {
+            get { return new Vector3( this[ 2, 0 ], this[ 2, 1 ], this[ 2, 2 ] ); }
         }
 
         static Matrix4x4( )
@@ -81,6 +97,7 @@ namespace ReTracer.Rendering
         {
             float Sin = MathHelper.Sin( Angle, Radians );
             float Cos = MathHelper.Cos( Angle, Radians );
+
             return new Matrix4x4(
                 Cos, 0, Sin, 0,
                 0, 1, 0, 0,
@@ -93,6 +110,7 @@ namespace ReTracer.Rendering
         {
             float Sin = MathHelper.Sin( Angle, Radians );
             float Cos = MathHelper.Cos( Angle, Radians );
+
             return new Matrix4x4(
                 Cos, -Sin, 0, 0,
                 Sin, Cos, 0, 0,
@@ -131,15 +149,42 @@ namespace ReTracer.Rendering
                 {
                     Temp[ i, j ] = 0;
                     for ( int k = 0; k < 2; k++ )
-                    {
-                        Temp[ i, j ] += A[ i, k ] * B[ k, j ];
-                    }
+                        Temp[ i, j ] += B[ i, k ] * A[ k, j ];
                 }
             }
 
             return new Matrix4x4( Temp );
         }
 
+        public static Vector3 operator*( Vector3 V, Matrix4x4 M )
+        {
+            float [ ] VectorMatrix = { V.X, V.Y, V.Z, 1 };
+
+            float [ ] Temp = new float[ 4 ];
+            for ( int i = 0; i < Dimensions; i++ )
+            {
+                Temp[ i ] = 0;
+                for ( int j = 0; j < Dimensions; j++ )
+                    Temp[ i ] += VectorMatrix[ j ] * M[ j, i ];
+            }
+
+            return new Vector3( Temp[ 0 ], Temp[ 1 ], Temp[ 2 ] );
+        }
+
         #endregion
+
+        public override string ToString( )
+        {
+            StringBuilder Builder = new StringBuilder( );
+            for ( int Y = 0; Y < Dimensions; Y++ )
+            {
+                for ( int X = 0; X < Dimensions; X++ )
+                    Builder.AppendFormat( "{0}\t", this[ X, Y ] );
+
+                Builder.Append( '\n' );
+            }
+
+            return Builder.ToString( );
+        }
     }
 }
