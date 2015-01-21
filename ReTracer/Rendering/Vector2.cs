@@ -18,5 +18,11 @@ namespace ReTracer.Rendering
         {
             get { return ( int ) Y; }
         }
+
+        public Vector2( int Width, int Height )
+        {
+            this.X = Width;
+            this.Y = Height;
+        }
     }
 }

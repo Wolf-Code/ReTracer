@@ -7,6 +7,12 @@ namespace ReTracer.Rendering.Objects
     {
         public float Radius { set; get; }
 
+        public Sphere( Vector3 Position, float Radius )
+        {
+            this.Position = Position;
+            this.Radius = Radius;
+        }
+
         public override Intersection CheckIntersection( Ray R )
         {
             Intersection Res = new Intersection( );

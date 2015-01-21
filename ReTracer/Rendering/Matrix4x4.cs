@@ -155,7 +155,7 @@ namespace ReTracer.Rendering
                 for ( int j = 0; j < Dimensions; j++ )
                 {
                     Temp[ i, j ] = 0;
-                    for ( int k = 0; k < 2; k++ )
+                    for ( int k = 0; k < Dimensions; k++ )
                         Temp[ i, j ] += A[ i, k ] * B[ k, j ];
                 }
             }

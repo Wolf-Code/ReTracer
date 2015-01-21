@@ -5,6 +5,7 @@ namespace ReTracer.Rendering
 {
     public class Vector3
     {
+        private static Vector3 m_UnitY, m_UnitZ;
         public float X { set; get; }
         public float Y { set; get; }
         public float Z { set; get; }
@@ -19,6 +20,17 @@ namespace ReTracer.Rendering
         public float Length
         {
             get { return ( float ) Math.Sqrt( this.LengthSquared ); }
+        }
+
+        public static Vector3 UnitX { private set; get; }
+        public static Vector3 UnitY { private set; get; }
+        public static Vector3 UnitZ { private set; get; }
+
+        static Vector3( )
+        {
+            UnitX = new Vector3( 1, 0, 0 );
+            UnitY = new Vector3( 0, 1, 0 );
+            UnitZ = new Vector3( 0, 0, 1 );
         }
 
         public Vector3( )

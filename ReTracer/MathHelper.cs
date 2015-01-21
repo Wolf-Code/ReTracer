@@ -29,6 +29,11 @@ namespace ReTracer
             return ( float ) Math.Sin( GetRadians( Angle, Radians ) );
         }
 
+        public static float Tan( float Angle, bool Radians = true )
+        {
+            return ( float ) Math.Tan( GetRadians( Angle, Radians ) );
+        }
+
         public static float ATan( float Angle, bool Radians = true )
         {
             return ( float ) Math.Atan( GetRadians( Angle, Radians ) );

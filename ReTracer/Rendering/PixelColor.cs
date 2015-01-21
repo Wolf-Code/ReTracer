@@ -33,6 +33,11 @@ namespace ReTracer.Rendering
             get { return Math.Min( 255, ( int ) ( B * 255 ) ); }
         }
 
+        public PixelColor( ) : this( 0, 0, 0 )
+        {
+
+        }
+
         public PixelColor( float R, float G, float B )
         {
             this.R = R;
@@ -53,6 +58,11 @@ namespace ReTracer.Rendering
         public static PixelColor operator /( PixelColor C, float Div )
         {
             return new PixelColor( C.R / Div, C.G / Div, C.B / Div );
+        }
+
+        public static PixelColor operator +( PixelColor C1, PixelColor C2 )
+        {
+            return new PixelColor( C1.R + C2.R, C1.G + C2.G, C1.B + C2.B );
         }
 
         #endregion

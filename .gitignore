@@ -44,3 +44,4 @@ Temporary Items
 ReTracer/bin
 ReTracer/obj
 Tracer_ConsoleTest/*
+*.suo
