@@ -50,8 +50,14 @@ namespace ReTracer.Rendering.Objects
             Res.Hit = true;
             Res.Position = R.Start + R.Direction * Res.Distance;
             Res.Normal = ( Res.Position - this.Position ).Normalized( );
+            Res.Object = this;
 
             return Res;
+        }
+
+        public override Vector3 SamplePosition( )
+        {
+            return this.Position + Vector3.Random( ) * this.Radius;
         }
     }
 }

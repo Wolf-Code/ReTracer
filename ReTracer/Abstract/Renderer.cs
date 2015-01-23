@@ -18,11 +18,13 @@ namespace ReTracer.Abstract
         protected PixelColor [ ] Pixels;
         protected uint [ ] PixelSamples;
         protected Scene CurrentScene { private set; get; }
+        protected RenderSettings CurrentSettings { private set; get; }
         private readonly Stopwatch Watch = new Stopwatch( );
 
         public void Render( Scene RenderScene, RenderSettings Settings )
         {
             this.CurrentScene = RenderScene;
+            this.CurrentSettings = Settings;
             int W = RenderScene.Camera.Resolution.IntX;
             int H = RenderScene.Camera.Resolution.IntY;
             this.Pixels = new PixelColor[ W * H ];
@@ -44,9 +46,19 @@ namespace ReTracer.Abstract
                 for ( int Y = 0; Y < H; Y += AreaHeight )
                 {
                     int Height = Math.Min( Y + AreaHeight, H ) - Y;
-                    this.RenderRegion( Settings, X, Y, Width, Height );
+                    int MaxSamples = ( int ) this.CurrentSettings.SamplesPerProgress;
+                    uint CurSamples = 0;
+
+                    while ( CurSamples < this.CurrentSettings.Samples )
+                    {
+                        uint Samples =
+                            ( uint ) Math.Max( 1, Math.Min( MaxSamples, this.CurrentSettings.Samples % MaxSamples ) );
+                        this.RenderRegion( Samples, X, Y, Width, Height );
+                        CurSamples += Samples;
+                    }
                 }
             }
+
             Watch.Stop( );
 
             Finished( );
@@ -57,17 +69,10 @@ namespace ReTracer.Abstract
             return RealY * CurrentScene.Camera.Resolution.IntX + RealX;
         }
 
-        protected abstract void RenderRegion( RenderSettings Settings, int StartX, int StartY, int Width, int Height );
+        protected abstract void RenderRegion( uint Samples, int StartX, int StartY, int Width, int Height );
 
-        protected void ReportProgress( int StartX, int StartY, int Width, int Height )
+        private Bitmap GetCurrentRender( )
         {
-            Console.WriteLine("Progress");
-        }
-
-        private void Finished( )
-        {
-            if ( OnFinish == null ) return;
-
             Bitmap I = new Bitmap( CurrentScene.Camera.Resolution.IntX, CurrentScene.Camera.Resolution.IntY,
                 PixelFormat.Format32bppArgb );
 
@@ -79,6 +84,9 @@ namespace ReTracer.Abstract
 
             Parallel.For( 0, Pixels.Length, Var =>
             {
+                if ( PixelSamples[ Var ] == 0 )
+                    return;
+
                 Color C = ( Pixels[ Var ] / PixelSamples[ Var ] ).ToColor( );
 
                 Var *= BPP;
@@ -92,9 +100,33 @@ namespace ReTracer.Abstract
             Marshal.Copy( Bytes, 0, Data.Scan0, Bytes.Length );
             I.UnlockBits( Data );
 
+            return I;
+        }
+
+        protected void ReportProgress( int StartX, int StartY, int Width, int Height )
+        {
+            TimeSpan FrameTime = Watch.Elapsed;
+            Watch.Reset( );
+
+            if ( this.OnProgress != null )
+            {
+                this.OnProgress.Invoke( this, new RenderProgressEventArgs
+                {
+                    RenderTime = FrameTime,
+                    Render = this.GetCurrentRender(  )
+                } );
+            }
+
+            Watch.Start( );
+        }
+
+        private void Finished( )
+        {
+            if ( OnFinish == null ) return;
+
             OnFinish.Invoke( this, new RenderFinishedEventArgs
             {
-                Image = I,
+                Render = this.GetCurrentRender(  ),
                 RenderTime = Watch.Elapsed
             } );
         }

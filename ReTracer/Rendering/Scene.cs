@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.Linq;
 using ReTracer.Abstract;
 
 namespace ReTracer.Rendering
@@ -8,6 +9,15 @@ namespace ReTracer.Rendering
     {
         public Camera Camera { set; get; }
         public List<GraphicsObject> Objects { set; get; }
+
+        public GraphicsObject RandomLight
+        {
+            get
+            {
+                GraphicsObject [ ] Lights = Objects.Where( O => O.Material.IsLightSource ).ToArray( );
+                return Lights[ ThreadRandom.Next( 0, Lights.Length - 1 ) ];
+            }
+        }
 
         public Scene( int X, int Y )
         {

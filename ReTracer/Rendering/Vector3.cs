@@ -5,7 +5,6 @@ namespace ReTracer.Rendering
 {
     public class Vector3
     {
-        private static Vector3 m_UnitY, m_UnitZ;
         public float X { set; get; }
         public float Y { set; get; }
         public float Z { set; get; }
@@ -69,6 +68,36 @@ namespace ReTracer.Rendering
                 this.Y / L,
                 this.Z / L );
         }
+
+        #region Static
+
+        /// <summary>
+        /// Returns a <see cref="Vector3"/> with random values between -1 and 1 for its coordinates.
+        /// </summary>
+        /// <returns>A random vector3.</returns>
+        public static Vector3 Random( )
+        {
+            return new Vector3(
+                ThreadRandom.NextFloat( ) * 2 - 1,
+                ThreadRandom.NextFloat( ) * 2 - 1,
+                ThreadRandom.NextFloat( ) * 2 - 1 );
+        }
+
+        /// <summary>
+        /// Returns a <see cref="Vector3"/> with a random direction, but in the same hemisphere as the given direction.
+        /// </summary>
+        /// <param name="Direction"></param>
+        /// <returns></returns>
+        public static Vector3 RandomInSameHemisphere( Vector3 Direction )
+        {
+            Vector3 Rand = Random( ).Normalized( );
+            if ( Direction.Dot( Rand ) < 0 )
+                Rand *= -1;
+
+            return Rand;
+        }
+
+        #endregion
 
         #region Operators
 

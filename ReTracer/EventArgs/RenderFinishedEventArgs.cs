@@ -5,7 +5,7 @@ namespace ReTracer.EventArgs
 {
     public class RenderFinishedEventArgs : System.EventArgs
     {
-        public Bitmap Image;
+        public Bitmap Render;
         public TimeSpan RenderTime;
     }
 }

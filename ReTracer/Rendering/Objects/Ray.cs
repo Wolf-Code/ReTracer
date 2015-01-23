@@ -1,6 +1,4 @@
-﻿
-using System;
-using ReTracer.Abstract;
+﻿using System.Linq;
 
 namespace ReTracer.Rendering.Objects
 {
@@ -8,18 +6,16 @@ namespace ReTracer.Rendering.Objects
     {
         public Vector3 Start;
         public Vector3 Direction;
+        public uint Depth;
 
         public Intersection CheckIntersection( Scene S )
         {
-            Intersection Res = new Intersection( );
-            foreach ( GraphicsObject Obj in S.Objects )
-            {
-                Intersection Temp = Obj.CheckIntersection( this );
-                if ( !Res.Hit || ( Temp.Hit && Temp.Distance < Res.Distance ) )
-                    Res = Temp;
-            }
-
-            return Res;
+            return S.Objects
+                .Select( O => O.CheckIntersection( this ) )
+                .Where( O => O.Hit )
+                .OrderBy( O => O.Distance )
+                .FirstOrDefault( )
+                   ?? new Intersection( );
         }
     }
 }

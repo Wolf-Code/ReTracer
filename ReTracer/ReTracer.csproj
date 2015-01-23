@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Abstract\GraphicsObject.cs" />
+    <Compile Include="Abstract\Material.cs" />
     <Compile Include="Abstract\Renderer.cs" />
     <Compile Include="EventArgs\RenderStartEventArgs.cs" />
     <Compile Include="EventArgs\RenderFinishedEventArgs.cs" />
@@ -50,8 +51,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rendering\Angle.cs" />
     <Compile Include="Rendering\Camera.cs" />
+    <Compile Include="Rendering\Materials\Diffuse.cs" />
     <Compile Include="Rendering\Matrix4x4.cs" />
     <Compile Include="Rendering\Objects\Intersection.cs" />
+    <Compile Include="Rendering\Objects\Plane.cs" />
     <Compile Include="Rendering\Objects\Sphere.cs" />
     <Compile Include="Rendering\PixelColor.cs" />
     <Compile Include="Rendering\Objects\Ray.cs" />
@@ -59,6 +62,7 @@
     <Compile Include="Rendering\Vector2.cs" />
     <Compile Include="Rendering\Vector3.cs" />
     <Compile Include="Settings\RenderSettings.cs" />
+    <Compile Include="ThreadRandom.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

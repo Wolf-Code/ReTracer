@@ -4,6 +4,10 @@ namespace ReTracer
 {
     public static class MathHelper
     {
+        public const float Theta = 0.001f;
+        public const float OneOverPI = 0.31830988618379067153776752674503f;
+        public const float OneOverTwoPI = 0.15915494309189533576888376337251f;
+
         private static float GetRadians( float Angle, bool InRadians = true )
         {
             return InRadians ? Angle : DegreesToRadians( Angle );
