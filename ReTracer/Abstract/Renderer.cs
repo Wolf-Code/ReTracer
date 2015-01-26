@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using System.Threading;
 using System.Threading.Tasks;
 using ReTracer.EventArgs;
 using ReTracer.Rendering;
@@ -15,19 +16,39 @@ namespace ReTracer.Abstract
         public event EventHandler<RenderStartEventArgs> OnStart; 
         public event EventHandler<RenderProgressEventArgs> OnProgress;
         public event EventHandler<RenderFinishedEventArgs> OnFinish;
+
         protected PixelColor [ ] Pixels;
         protected uint [ ] PixelSamples;
         protected Scene CurrentScene { private set; get; }
         protected RenderSettings CurrentSettings { private set; get; }
         private readonly Stopwatch Watch = new Stopwatch( );
         private uint PixelsRendered;
+        private Thread RenderThread;
+        private bool Rendering;
 
         public void Render( Scene RenderScene, RenderSettings Settings )
         {
+            if ( Rendering )
+                return;
+
+            this.Rendering = true;
             this.CurrentScene = RenderScene;
             this.CurrentSettings = Settings;
-            int W = RenderScene.Camera.Resolution.IntX;
-            int H = RenderScene.Camera.Resolution.IntY;
+
+            RenderThread = new Thread( this.StartRender );
+            RenderThread.Start( );
+        }
+
+        public void Cancel( )
+        {
+            RenderThread.Abort( );
+            this.Rendering = false;
+        }
+
+        protected void StartRender( )
+        {
+            int W = CurrentScene.Camera.Resolution.IntX;
+            int H = CurrentScene.Camera.Resolution.IntY;
             this.Pixels = new PixelColor[ W * H ];
 
             Parallel.For( 0, this.Pixels.Length, Var =>
@@ -36,8 +57,11 @@ namespace ReTracer.Abstract
             } );
             this.PixelSamples = new uint[ this.Pixels.Length ];
 
-            int AreaWidth = ( int ) Math.Ceiling( RenderScene.Camera.Resolution.X / Settings.AreaDivider );
-            int AreaHeight = ( int ) Math.Ceiling( RenderScene.Camera.Resolution.Y / Settings.AreaDivider );
+            int AreaWidth = ( int ) Math.Ceiling( CurrentScene.Camera.Resolution.X / CurrentSettings.AreaDivider );
+            int AreaHeight = ( int ) Math.Ceiling( CurrentScene.Camera.Resolution.Y / CurrentSettings.AreaDivider );
+
+            if ( OnStart != null )
+                OnStart.Invoke( this, new RenderStartEventArgs( ) );
 
             Watch.Restart( );
             for ( int X = 0; X < W; X += AreaWidth )
@@ -53,7 +77,7 @@ namespace ReTracer.Abstract
                     while ( CurSamples < this.CurrentSettings.Samples )
                     {
                         uint Samples =
-                            ( uint ) Math.Max( 1, Math.Min( MaxSamples, this.CurrentSettings.Samples - CurSamples ) );
+                            ( uint ) Math.Min( MaxSamples, this.CurrentSettings.Samples - CurSamples );
                         this.RenderRegion( Samples, X, Y, Width, Height );
                         this.ReportProgress( X, Y, Width, Height );
 
@@ -131,6 +155,7 @@ namespace ReTracer.Abstract
 
         private void Finished( )
         {
+            this.Rendering = false;
             if ( OnFinish == null ) return;
 
             OnFinish.Invoke( this, new RenderFinishedEventArgs

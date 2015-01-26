@@ -38,7 +38,8 @@ namespace ReTracer.Rendering.Objects
         public override Vector3 SamplePosition( )
         {
             // TODO: Actual random position
-            return this.Normal * this.Offset;
+            return this.Normal * this.Offset +
+                   new Vector3( ThreadRandom.Next( -20, 20 ), ThreadRandom.Next( -20, 20 ), 0 );
         }
     }
 }

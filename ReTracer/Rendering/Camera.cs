@@ -58,5 +58,19 @@ namespace ReTracer.Rendering
 
             return R;
         }
+
+        public void AddRotation( float Pitch, float Yaw, float Roll, bool Radians = true )
+        {
+            this.Angle.Pitch += MathHelper.GetRadians( Pitch, Radians );
+            this.Angle.Yaw += MathHelper.GetRadians( Yaw, Radians );
+            this.Angle.Roll += MathHelper.GetRadians( Roll, Radians );
+        }
+
+        public void Move( float Forward, float Right, float Up )
+        {
+            this.Position += this.Angle.Forward * Forward +
+                             this.Angle.Right * Right +
+                             this.Angle.Up * Up;
+        }
     }
 }

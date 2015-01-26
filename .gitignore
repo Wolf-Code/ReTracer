@@ -45,3 +45,7 @@ ReTracer/bin
 ReTracer/obj
 Tracer_ConsoleTest/*
 *.suo
+*.psess
+*.vspx
+*.vsp
+ReTracer/ReTracer.v12.suo

@@ -7,7 +7,7 @@ namespace ReTracer.Rendering
         {
             set
             {
-                Pitch1 = value;
+                Pitch1 = value % 360;
                 this.ForceRefresh( );
             }
             get { return Pitch1; }
@@ -17,7 +17,7 @@ namespace ReTracer.Rendering
         {
             set
             {
-                Yaw1 = value;
+                Yaw1 = value % 360;
                 this.ForceRefresh( );
             }
             get { return Yaw1; }
@@ -27,7 +27,7 @@ namespace ReTracer.Rendering
         {
             set
             {
-                Roll1 = value;
+                Roll1 = value % 360;
                 this.ForceRefresh( );
             }
             get { return Roll1; }
@@ -56,13 +56,12 @@ namespace ReTracer.Rendering
         {
             get
             {
-                if ( m_RefreshRotation )
-                {
-                    m_Rotation = Matrix4x4.CreateRotationX( Pitch, Radians ) *
-                                 Matrix4x4.CreateRotationY( Yaw, Radians ) *
-                                 Matrix4x4.CreateRotationZ( Roll, Radians );
-                    m_RefreshRotation = false;
-                }
+                if ( !m_RefreshRotation ) return m_Rotation;
+
+                m_Rotation = Matrix4x4.CreateRotationX( Pitch, Radians ) *
+                             Matrix4x4.CreateRotationY( Yaw, Radians ) *
+                             Matrix4x4.CreateRotationZ( Roll, Radians );
+                m_RefreshRotation = false;
 
                 return m_Rotation;
             }
@@ -72,11 +71,10 @@ namespace ReTracer.Rendering
         {
             get
             {
-                if ( m_RefreshRight )
-                {
-                    m_Right = Vector3.UnitX * Rotation;
-                    m_RefreshRight = false;
-                }
+                if ( !m_RefreshRight ) return m_Right;
+
+                m_Right = Vector3.UnitX * Rotation;
+                m_RefreshRight = false;
 
                 return m_Right;
             }
@@ -86,11 +84,10 @@ namespace ReTracer.Rendering
         {
             get
             {
-                if ( m_RefreshUp )
-                {
-                    m_Up = Vector3.UnitY * Rotation;
-                    m_RefreshUp = false;
-                }
+                if ( !m_RefreshUp ) return m_Up;
+
+                m_Up = Vector3.UnitY * Rotation;
+                m_RefreshUp = false;
 
                 return m_Up;
             }
@@ -100,11 +97,10 @@ namespace ReTracer.Rendering
         {
             get
             {
-                if ( m_RefreshForward )
-                {
-                    m_Forward = Vector3.UnitZ * Rotation;
-                    m_RefreshForward = false;
-                }
+                if ( !m_RefreshForward ) return m_Forward;
+
+                m_Forward = Vector3.UnitZ * Rotation;
+                m_RefreshForward = false;
 
                 return m_Forward;
             }

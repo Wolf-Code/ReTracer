@@ -3,7 +3,7 @@ using System.ComponentModel;
 
 namespace ReTracer.Rendering
 {
-    public class Vector3
+    public struct Vector3
     {
         public float X { set; get; }
         public float Y { set; get; }
@@ -32,14 +32,14 @@ namespace ReTracer.Rendering
             UnitZ = new Vector3( 0, 0, 1 );
         }
 
-        public Vector3( )
+        /*public Vector3( )
         {
             this.X = 0;
             this.Y = 0;
             this.Z = 0;
-        }
+        }*/
 
-        public Vector3( float X, float Y, float Z )
+        public Vector3( float X, float Y, float Z ) : this( )
         {
             this.X = X;
             this.Y = Y;
@@ -54,6 +54,7 @@ namespace ReTracer.Rendering
         public void Normalize( )
         {
             float L = this.Length;
+
             this.X /= L;
             this.Y /= L;
             this.Z /= L;
@@ -108,31 +109,43 @@ namespace ReTracer.Rendering
 
         public static Vector3 operator -( Vector3 V1, Vector3 V2 )
         {
-            return new Vector3(
-                V1.X - V2.X,
-                V1.Y - V2.Y,
-                V1.Z - V2.Z );
+            V1.X -= V2.X;
+            V1.Y -= V2.Y;
+            V1.Z -= V2.Z;
+
+            return V1;
         }
 
         public static Vector3 operator +(Vector3 V1, Vector3 V2)
         {
-            return new Vector3(
-                V1.X + V2.X,
-                V1.Y + V2.Y,
-                V1.Z + V2.Z);
+            V1.X += V2.X;
+            V1.Y += V2.Y;
+            V1.Z += V2.Z;
+
+            return V1;
         }
 
         public static Vector3 operator *( Vector3 Vector, float Mul )
         {
-            return new Vector3(
-                Vector.X * Mul,
-                Vector.Y * Mul,
-                Vector.Z * Mul );
+            Vector.X *= Mul;
+            Vector.Y *= Mul;
+            Vector.Z *= Mul;
+
+            return Vector;
         }
 
         public static Vector3 operator *( float Mul, Vector3 Vector )
         {
             return Vector * Mul;
+        }
+
+        public static Vector3 operator /( Vector3 Vector, float Div )
+        {
+            Vector.X /= Div;
+            Vector.Y /= Div;
+            Vector.Z /= Div;
+
+            return Vector;
         }
 
         #endregion

@@ -1,4 +1,4 @@
-﻿using System.Linq;
+﻿using ReTracer.Abstract;
 
 namespace ReTracer.Rendering.Objects
 {
@@ -10,12 +10,15 @@ namespace ReTracer.Rendering.Objects
 
         public Intersection CheckIntersection( Scene S )
         {
-            return S.Objects
-                .Select( O => O.CheckIntersection( this ) )
-                .Where( O => O.Hit )
-                .OrderBy( O => O.Distance )
-                .First( )
-                   ?? new Intersection( );
+            Intersection Res = new Intersection( );
+            foreach ( GraphicsObject Obj in S.Objects )
+            {
+                Intersection Temp = Obj.CheckIntersection( this );
+                if ( !Res.Hit || ( Temp.Hit && Temp.Distance < Res.Distance ) )
+                    Res = Temp;
+            }
+
+            return Res;
         }
     }
 }

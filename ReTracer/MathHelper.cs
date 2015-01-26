@@ -9,7 +9,7 @@ namespace ReTracer
         public const float OneOverPI = ( float ) ( 1.0 / Math.PI );
         public const float OneOverTwoPI = ( float ) ( 1.0 / ( 2.0 * Math.PI ) );
 
-        private static float GetRadians( float Angle, bool InRadians = true )
+        public static float GetRadians( float Angle, bool InRadians = true )
         {
             return InRadians ? Angle : DegreesToRadians( Angle );
         }
