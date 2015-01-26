@@ -8,13 +8,14 @@ namespace ReTracer.Rendering
     public class Scene
     {
         public Camera Camera { set; get; }
-        public List<GraphicsObject> Objects { set; get; }
+        protected List<GraphicsObject> m_Objects { set; get; }
+        public GraphicsObject [ ] Objects;
+        private GraphicsObject [ ] Lights;
 
         public GraphicsObject RandomLight
         {
             get
             {
-                GraphicsObject [ ] Lights = Objects.Where( O => O.Material.IsLightSource ).ToArray( );
                 return Lights[ ThreadRandom.Next( 0, Lights.Length - 1 ) ];
             }
         }
@@ -22,12 +23,24 @@ namespace ReTracer.Rendering
         public Scene( int X, int Y )
         {
             this.Camera = new Camera( X, Y );
-            Objects = new List<GraphicsObject>( );
+            m_Objects = new List<GraphicsObject>( );
         }
 
         public Scene( Vector2 Resolution ) : this( ( int ) Resolution.X, ( int ) Resolution.Y )
         {
 
+        }
+
+        private void BuildLightArray( )
+        {
+            Lights = Objects.Where( O => O.Material.IsLightSource ).ToArray( );
+        }
+
+        public void AddObject( GraphicsObject Object )
+        {
+            this.m_Objects.Add( Object );
+            this.Objects = m_Objects.ToArray( );
+            this.BuildLightArray( );
         }
 
         public void SetCamera( Vector3 Position, Angle Angle )

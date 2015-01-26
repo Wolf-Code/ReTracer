@@ -97,6 +97,11 @@ namespace ReTracer.Rendering
             return Rand;
         }
 
+        public static Vector3 Reflect( Vector3 Vector, Vector3 Normal )
+        {
+            return Vector - 2.0f * Vector.Dot( Normal ) * Normal;
+        }
+
         #endregion
 
         #region Operators
@@ -123,6 +128,11 @@ namespace ReTracer.Rendering
                 Vector.X * Mul,
                 Vector.Y * Mul,
                 Vector.Z * Mul );
+        }
+
+        public static Vector3 operator *( float Mul, Vector3 Vector )
+        {
+            return Vector * Mul;
         }
 
         #endregion

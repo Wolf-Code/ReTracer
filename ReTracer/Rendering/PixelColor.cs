@@ -100,5 +100,10 @@ namespace ReTracer.Rendering
         }
 
         #endregion
+
+        public override string ToString( )
+        {
+            return string.Format( "Red: {0}, Green: {1}, Blue: {2}", R, G, B );
+        }
     }
 }

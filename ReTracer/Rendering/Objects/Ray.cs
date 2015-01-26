@@ -14,7 +14,7 @@ namespace ReTracer.Rendering.Objects
                 .Select( O => O.CheckIntersection( this ) )
                 .Where( O => O.Hit )
                 .OrderBy( O => O.Distance )
-                .FirstOrDefault( )
+                .First( )
                    ?? new Intersection( );
         }
     }

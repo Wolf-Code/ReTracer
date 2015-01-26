@@ -1,33 +1,41 @@
-﻿using ReTracer.Abstract;
+﻿using System;
+using ReTracer.Abstract;
 using ReTracer.Rendering.Objects;
 
 namespace ReTracer.Rendering.Materials
 {
-    public class Diffuse : Material
+    public class Specular : Material
     {
+        public float Glossyness { set; get; }
+
         public override float BRDF( Vector3 RayIn, Vector3 RayOut, Intersection Intersection )
         {
-            return MathHelper.OneOverPI;
+            return 1f;
         }
 
         public override float CosTheta( Vector3 RayIn, Vector3 RayOut, Intersection Intersection )
         {
-            return Intersection.Normal.Dot( RayOut );
+            Vector3 Ref = Vector3.Reflect( RayIn, Intersection.Normal );
+
+            return Math.Abs( Ref.Dot( RayOut ) - 1f ) < MathHelper.Theta + Glossyness ? 1f : 0f;
         }
 
         public override float PDF( Vector3 RayIn, Vector3 RayOut, Intersection Intersection )
         {
-            return MathHelper.OneOverTwoPI;
+            return 1f;
         }
 
         public override Vector3 NewDirection( Vector3 RayIn, Intersection Intersection )
         {
-            return Vector3.RandomInSameHemisphere( Intersection.Normal );
+            Vector3 Ref = Vector3.Reflect( RayIn, Intersection.Normal );
+            Vector3 Rand = Vector3.RandomInSameHemisphere( Ref );
+
+            return ( Ref * ( 1f - this.Glossyness ) + Rand * this.Glossyness ).Normalized( );
         }
 
         public override PixelColor ColorAddition( PixelColor LightInput )
         {
-            return LightInput;
+            return PixelColor.Black;
         }
     }
 }

@@ -6,11 +6,14 @@ namespace ReTracer.Rendering.Objects
     public class Sphere : GraphicsObject
     {
         public float Radius { set; get; }
+        private float RadiusSquared;
 
         public Sphere( Vector3 Position, float Radius )
         {
             this.Position = Position;
             this.Radius = Radius;
+
+            this.RadiusSquared = this.Radius * this.Radius;
         }
 
         public override Intersection CheckIntersection( Ray R )
@@ -18,8 +21,8 @@ namespace ReTracer.Rendering.Objects
             Intersection Res = new Intersection( );
 
             float A = R.Direction.Dot( R.Direction );
-            float B = 2 * R.Direction.Dot(R.Start - this.Position);
-            float C = (R.Start - this.Position).Dot(R.Start - this.Position) - (this.Radius * this.Radius);
+            float B = 2 * R.Direction.Dot( R.Start - this.Position );
+            float C = ( R.Start - this.Position ).Dot( R.Start - this.Position ) - this.RadiusSquared;
 
             float Discriminant = B * B - 4 * A * C;
             if ( Discriminant < 0 )

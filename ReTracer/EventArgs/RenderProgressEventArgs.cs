@@ -7,5 +7,6 @@ namespace ReTracer.EventArgs
     {
         public TimeSpan RenderTime;
         public Bitmap Render;
+        public float Progress;
     }
 }

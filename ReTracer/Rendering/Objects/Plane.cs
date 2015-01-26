@@ -1,4 +1,5 @@
-﻿using ReTracer.Abstract;
+﻿using System;
+using ReTracer.Abstract;
 
 namespace ReTracer.Rendering.Objects
 {
@@ -18,7 +19,7 @@ namespace ReTracer.Rendering.Objects
             Intersection Res = new Intersection( );
 
             float Div = this.Normal.Dot( R.Direction );
-            if ( Div == 0 )
+            if ( Math.Abs( Div ) < MathHelper.Theta )
                 return Res;
 
             float Distance = -( this.Normal.Dot( R.Start ) - this.Offset ) / Div;

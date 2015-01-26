@@ -20,6 +20,7 @@ namespace ReTracer.Abstract
         protected Scene CurrentScene { private set; get; }
         protected RenderSettings CurrentSettings { private set; get; }
         private readonly Stopwatch Watch = new Stopwatch( );
+        private uint PixelsRendered;
 
         public void Render( Scene RenderScene, RenderSettings Settings )
         {
@@ -52,8 +53,10 @@ namespace ReTracer.Abstract
                     while ( CurSamples < this.CurrentSettings.Samples )
                     {
                         uint Samples =
-                            ( uint ) Math.Max( 1, Math.Min( MaxSamples, this.CurrentSettings.Samples % MaxSamples ) );
+                            ( uint ) Math.Max( 1, Math.Min( MaxSamples, this.CurrentSettings.Samples - CurSamples ) );
                         this.RenderRegion( Samples, X, Y, Width, Height );
+                        this.ReportProgress( X, Y, Width, Height );
+
                         CurSamples += Samples;
                     }
                 }
@@ -108,12 +111,18 @@ namespace ReTracer.Abstract
             TimeSpan FrameTime = Watch.Elapsed;
             Watch.Reset( );
 
+            PixelsRendered += ( uint ) ( ( Width * Height ) * this.CurrentSettings.SamplesPerProgress );
+
             if ( this.OnProgress != null )
             {
                 this.OnProgress.Invoke( this, new RenderProgressEventArgs
                 {
                     RenderTime = FrameTime,
-                    Render = this.GetCurrentRender(  )
+                    Render = this.GetCurrentRender( ),
+                    Progress =
+                        ( float ) PixelsRendered /
+                        ( this.CurrentScene.Camera.Resolution.IntX * this.CurrentScene.Camera.Resolution.IntY *
+                          this.CurrentSettings.Samples )
                 } );
             }
 
