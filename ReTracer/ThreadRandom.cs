@@ -76,6 +76,11 @@ namespace ReTracer
             return ( float ) NextDouble( );
         }
 
+        public static float NextNegPosFloat( )
+        {
+            return NextFloat( ) * 2f - 1f;
+        }
+
         /// <summary>See <see cref="Random.NextBytes(byte[])" /></summary> 
         public static void NextBytes( byte [ ] buffer )
         {

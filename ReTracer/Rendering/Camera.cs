@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.ComponentModel;
 using ReTracer.Rendering.Objects;
 
@@ -8,6 +9,7 @@ namespace ReTracer.Rendering
     {
         private float Fov;
         private Vector2 Resolution1;
+        private bool m_HasChanged;
 
         public Vector2 Resolution
         {
@@ -37,12 +39,19 @@ namespace ReTracer.Rendering
 
         public float FOVDivided { private set; get; }
 
+        public float ApertureSize { set; get; }
+        public float FocalLength { set; get; }
+        public uint DepthOfFieldRays { set; get; }
+
         public Camera( int W, int H )
         {
             Resolution = new Vector2( W, H );
             this.Angle = new Angle( 0, 0, 0 );
             this.Position = new Vector3( 0, 0, 0 );
             this.FOV = 90;
+            this.ApertureSize = 0f;
+            this.FocalLength = 1000f;
+            this.DepthOfFieldRays = 4;
         }
 
         public Ray GetRay( float X, float Y )
@@ -59,11 +68,19 @@ namespace ReTracer.Rendering
             return R;
         }
 
-        public void AddRotation( float Pitch, float Yaw, float Roll, bool Radians = true )
+        public Vector3 GetRandomPositionOnAperture( )
         {
-            this.Angle.Pitch += MathHelper.GetRadians( Pitch, Radians );
-            this.Angle.Yaw += MathHelper.GetRadians( Yaw, Radians );
-            this.Angle.Roll += MathHelper.GetRadians( Roll, Radians );
+            return this.Angle.Right * ThreadRandom.NextNegPosFloat( ) * this.ApertureSize +
+                   this.Angle.Up * ThreadRandom.NextNegPosFloat( ) * this.ApertureSize;
+        }
+
+        public void AddRotation( float Pitch, float Yaw, float Roll )
+        {
+            this.Angle.Pitch += Pitch;
+            this.Angle.Yaw += Yaw;
+            this.Angle.Roll += Roll;
+
+            this.m_HasChanged = true;
         }
 
         public void Move( float Forward, float Right, float Up )
@@ -71,6 +88,16 @@ namespace ReTracer.Rendering
             this.Position += this.Angle.Forward * Forward +
                              this.Angle.Right * Right +
                              this.Angle.Up * Up;
+
+            this.m_HasChanged = true;
+        }
+
+        public bool CheckForChange( )
+        {
+            if ( !m_HasChanged ) return false;
+
+            m_HasChanged = false;
+            return true;
         }
     }
 }

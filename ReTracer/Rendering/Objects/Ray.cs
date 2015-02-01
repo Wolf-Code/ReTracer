@@ -20,5 +20,10 @@ namespace ReTracer.Rendering.Objects
 
             return Res;
         }
+
+        public override string ToString( )
+        {
+            return this.Start + " --=-- " + this.Direction;
+        }
     }
 }

@@ -73,7 +73,7 @@ namespace ReTracer.Rendering
             {
                 if ( !m_RefreshRight ) return m_Right;
 
-                m_Right = Vector3.UnitX * Rotation;
+                m_Right = Rotation.Right;
                 m_RefreshRight = false;
 
                 return m_Right;
@@ -86,7 +86,7 @@ namespace ReTracer.Rendering
             {
                 if ( !m_RefreshUp ) return m_Up;
 
-                m_Up = Vector3.UnitY * Rotation;
+                m_Up = Rotation.Up;
                 m_RefreshUp = false;
 
                 return m_Up;
@@ -99,7 +99,7 @@ namespace ReTracer.Rendering
             {
                 if ( !m_RefreshForward ) return m_Forward;
 
-                m_Forward = Vector3.UnitZ * Rotation;
+                m_Forward = Rotation.Forward;
                 m_RefreshForward = false;
 
                 return m_Forward;
@@ -108,10 +108,7 @@ namespace ReTracer.Rendering
 
         private void ForceRefresh( )
         {
-            m_RefreshForward = true;
-            m_RefreshRight = true;
-            m_RefreshUp = true;
-            m_RefreshRotation = true;
+            m_RefreshForward = m_RefreshRight = m_RefreshUp = m_RefreshRotation = true;
         }
 
         public Angle( float Pitch, float Yaw, float Roll )

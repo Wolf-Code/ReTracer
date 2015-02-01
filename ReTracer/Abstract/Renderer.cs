@@ -17,6 +17,13 @@ namespace ReTracer.Abstract
         public event EventHandler<RenderProgressEventArgs> OnProgress;
         public event EventHandler<RenderFinishedEventArgs> OnFinish;
 
+        public enum RenderType
+        {
+            Off,
+            Enabled,
+            Continuous
+        }
+
         protected PixelColor [ ] Pixels;
         protected uint [ ] PixelSamples;
         protected Scene CurrentScene { private set; get; }
@@ -24,38 +31,101 @@ namespace ReTracer.Abstract
         private readonly Stopwatch Watch = new Stopwatch( );
         private uint PixelsRendered;
         private Thread RenderThread;
-        private bool Rendering;
+        public RenderType Rendering { private set; get; }
+        private bool ShouldCancel;
+
+        protected Renderer( )
+        {
+            this.Rendering = RenderType.Off;
+        }
+
+        private bool OnRenderStart( Scene RenderScene, RenderSettings Settings, RenderType Type )
+        {
+            if ( Rendering != RenderType.Off || this.ShouldCancel )
+                return false;
+
+            if ( RenderThread != null && RenderThread.IsAlive )
+                return false;
+
+            this.Rendering = Type;
+            this.CurrentScene = RenderScene;
+            this.CurrentSettings = Settings;
+
+            int W = CurrentScene.Camera.Resolution.IntX;
+            int H = CurrentScene.Camera.Resolution.IntY;
+
+            this.Pixels = new PixelColor[ W * H ];
+            this.PixelSamples = new uint[ this.Pixels.Length ];
+
+            return true;
+        }
 
         public void Render( Scene RenderScene, RenderSettings Settings )
         {
-            if ( Rendering )
+            if ( !OnRenderStart( RenderScene, Settings, RenderType.Enabled ) )
                 return;
-
-            this.Rendering = true;
-            this.CurrentScene = RenderScene;
-            this.CurrentSettings = Settings;
 
             RenderThread = new Thread( this.StartRender );
             RenderThread.Start( );
         }
 
+        public void ContinuousRender( Scene RenderScene, RenderSettings Settings )
+        {
+            Settings.Samples = 99999;
+            if ( !OnRenderStart( RenderScene, Settings, RenderType.Continuous ) )
+                return;
+
+            RenderThread = new Thread( this.ContinuousRender );
+            RenderThread.Start( );
+        }
+
+        public void RenderPreview( Scene S )
+        {
+            RenderSettings Settings = new RenderSettings
+            {
+                AreaDivider = 1,
+                MaxBounces = 3,
+                Samples = 1,
+                SamplesPerProgress = 1
+            };
+
+            this.Render( S, Settings );
+        }
+
         public void Cancel( )
         {
-            RenderThread.Abort( );
-            this.Rendering = false;
+            if ( this.Rendering == RenderType.Off )
+                return;
+
+            this.ShouldCancel = true;
+            this.Rendering = RenderType.Off;
+        }
+
+        protected void ContinuousRender( )
+        {
+            int W = CurrentScene.Camera.Resolution.IntX;
+            int H = CurrentScene.Camera.Resolution.IntY;
+
+            int AreaWidth = ( int ) Math.Ceiling( CurrentScene.Camera.Resolution.X / CurrentSettings.AreaDivider );
+            int AreaHeight = ( int ) Math.Ceiling( CurrentScene.Camera.Resolution.Y / CurrentSettings.AreaDivider );
+
+            if ( OnStart != null )
+                OnStart.Invoke( this, new RenderStartEventArgs( ) );
+
+            while ( true )
+            {
+                Watch.Restart( );
+
+                this.RenderImage( W, H, AreaWidth, AreaHeight );
+
+                Watch.Stop( );
+            }
         }
 
         protected void StartRender( )
         {
             int W = CurrentScene.Camera.Resolution.IntX;
             int H = CurrentScene.Camera.Resolution.IntY;
-            this.Pixels = new PixelColor[ W * H ];
-
-            Parallel.For( 0, this.Pixels.Length, Var =>
-            {
-                this.Pixels[ Var ] = new PixelColor( );
-            } );
-            this.PixelSamples = new uint[ this.Pixels.Length ];
 
             int AreaWidth = ( int ) Math.Ceiling( CurrentScene.Camera.Resolution.X / CurrentSettings.AreaDivider );
             int AreaHeight = ( int ) Math.Ceiling( CurrentScene.Camera.Resolution.Y / CurrentSettings.AreaDivider );
@@ -64,6 +134,16 @@ namespace ReTracer.Abstract
                 OnStart.Invoke( this, new RenderStartEventArgs( ) );
 
             Watch.Restart( );
+            
+            this.RenderImage( W, H, AreaWidth, AreaHeight );
+
+            Watch.Stop( );
+
+            Finished( );
+        }
+
+        private void RenderImage( int W, int H, int AreaWidth, int AreaHeight )
+        {
             for ( int X = 0; X < W; X += AreaWidth )
             {
                 int Width = Math.Min( X + AreaWidth, W ) - X;
@@ -82,13 +162,12 @@ namespace ReTracer.Abstract
                         this.ReportProgress( X, Y, Width, Height );
 
                         CurSamples += Samples;
+
+                        if ( ShouldCancel )
+                            return;
                     }
                 }
             }
-
-            Watch.Stop( );
-
-            Finished( );
         }
 
         protected int ConvertPixelCoordinatesToArrayIndex( int RealX, int RealY )
@@ -114,13 +193,13 @@ namespace ReTracer.Abstract
                 if ( PixelSamples[ Var ] == 0 )
                     return;
 
-                Color C = ( Pixels[ Var ] / PixelSamples[ Var ] ).ToColor( );
+                PixelColor C = ( Pixels[ Var ] / PixelSamples[ Var ] );
 
                 Var *= BPP;
 
-                Bytes[ Var ] = C.B;
-                Bytes[ Var + 1 ] = C.G;
-                Bytes[ Var + 2 ] = C.R;
+                Bytes[ Var ] = C.ByteB;
+                Bytes[ Var + 1 ] = C.ByteG;
+                Bytes[ Var + 2 ] = C.ByteR;
                 Bytes[ Var + 3 ] = 255;
             } );
 
@@ -155,7 +234,8 @@ namespace ReTracer.Abstract
 
         private void Finished( )
         {
-            this.Rendering = false;
+            this.Rendering = RenderType.Off;
+            this.ShouldCancel = false;
             if ( OnFinish == null ) return;
 
             OnFinish.Invoke( this, new RenderFinishedEventArgs

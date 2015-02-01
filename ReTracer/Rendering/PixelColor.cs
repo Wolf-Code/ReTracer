@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace ReTracer.Rendering
 {
-    public class PixelColor
+    public struct PixelColor
     {
         [StructLayout(LayoutKind.Sequential)]
         public struct PixelColorStruct
@@ -33,6 +33,21 @@ namespace ReTracer.Rendering
             get { return Math.Min( 255, ( int ) ( B * 255 ) ); }
         }
 
+        public byte ByteR
+        {
+            get { return ( byte ) IntR; }
+        }
+
+        public byte ByteG
+        {
+            get { return ( byte ) IntG; }
+        }
+
+        public byte ByteB
+        {
+            get { return ( byte ) IntB; }
+        }
+
         public float HighestValue
         {
             get { return Math.Max( Math.Max( this.R, this.G ), this.B ); }
@@ -52,17 +67,13 @@ namespace ReTracer.Rendering
             White = new PixelColor( 1f );
         }
 
-        public PixelColor( ) : this( 0, 0, 0 )
-        {
-
-        }
 
         public PixelColor( float Value ) : this( Value, Value, Value )
         {
 
         }
 
-        public PixelColor( float R, float G, float B )
+        public PixelColor( float R, float G, float B ) : this( )
         {
             this.R = R;
             this.G = G;
@@ -97,6 +108,16 @@ namespace ReTracer.Rendering
         public static PixelColor operator *( PixelColor C1, PixelColor C2 )
         {
             return new PixelColor( C1.R * C2.R, C1.G * C2.G, C1.B * C2.B );
+        }
+
+        public static bool operator >( PixelColor C1, PixelColor C2 )
+        {
+            return C1.R + C1.G + C1.B > C2.R + C2.G + C2.B;
+        }
+
+        public static bool operator <(PixelColor C1, PixelColor C2)
+        {
+            return C1.R + C1.G + C1.B < C2.R + C2.G + C2.B;
         }
 
         #endregion

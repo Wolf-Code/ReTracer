@@ -51,6 +51,14 @@ namespace ReTracer.Rendering
             return this.X * Other.X + this.Y * Other.Y + this.Z * Other.Z;
         }
 
+        public Vector3 Cross( Vector3 Other )
+        {
+            return new Vector3( 
+                this.Y * Other.Z - this.Z * Other.Y,
+                this.Z * Other.X - this.X * Other.Z,
+                this.X * Other.Y - this.Y * Other.X );
+        }
+
         public void Normalize( )
         {
             float L = this.Length;
@@ -64,10 +72,7 @@ namespace ReTracer.Rendering
         {
             float L = this.Length;
 
-            return new Vector3(
-                this.X / L,
-                this.Y / L,
-                this.Z / L );
+            return this / L;
         }
 
         #region Static
