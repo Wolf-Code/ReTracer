@@ -49,3 +49,5 @@ Tracer_ConsoleTest/*
 *.vspx
 *.vsp
 ReTracer/ReTracer.v12.suo
+Tracer_SFMLTest/bin
+Tracer_SFMLTest/obj

@@ -22,7 +22,7 @@ namespace ReTracer.Rendering.Objects
 
             float A = R.Direction.Dot( R.Direction );
             float B = 2 * R.Direction.Dot( R.Start - this.Position );
-            float C = ( R.Start - this.Position ).Dot( R.Start - this.Position ) - this.RadiusSquared;
+            float C = ( R.Start - this.Position ).LengthSquared - this.RadiusSquared;
 
             float Discriminant = B * B - 4 * A * C;
             if ( Discriminant < 0 )

@@ -7,6 +7,8 @@ namespace ReTracer.EventArgs
     {
         public TimeSpan RenderTime;
         public Bitmap Render;
+        public byte [ ] Bytes;
         public float Progress;
+        public uint Samples;
     }
 }

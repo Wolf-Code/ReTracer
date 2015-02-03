@@ -1,6 +1,4 @@
-﻿
-using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using ReTracer.Rendering.Objects;
 
 namespace ReTracer.Rendering
@@ -10,6 +8,7 @@ namespace ReTracer.Rendering
         private float Fov;
         private Vector2 Resolution1;
         private bool m_HasChanged;
+        private float FocalLength1;
 
         public Vector2 Resolution
         {
@@ -40,7 +39,17 @@ namespace ReTracer.Rendering
         public float FOVDivided { private set; get; }
 
         public float ApertureSize { set; get; }
-        public float FocalLength { set; get; }
+
+        public float FocalLength
+        {
+            set
+            {
+                FocalLength1 = value;
+                this.m_HasChanged = true;
+            }
+            get { return FocalLength1; }
+        }
+
         public uint DepthOfFieldRays { set; get; }
 
         public Camera( int W, int H )
