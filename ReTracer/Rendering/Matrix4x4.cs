@@ -77,7 +77,7 @@ namespace ReTracer.Rendering
         {
             return new Matrix4x4(
                 Scale.X, 0, 0, 0,
-                0, 1, 0, 0,
+                0, Scale.Y, 0, 0,
                 0, 0, Scale.Z, 0 );
         }
 
