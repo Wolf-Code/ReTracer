@@ -110,6 +110,12 @@ namespace Tracer_SFMLTest
             };
 
             this.FrameTime = new TimeSpan( );
+
+            Console.WriteLine(
+@"Instructions:
+Hold right mouse button while moving the mouse to rotate the camera.
+Left click to focus on the point beneath the cursor.
+WASD to move around.");
         }
 
         private void Mouse_ButtonPressed( object sender, SFML.Window.MouseButtonEventArgs e )
